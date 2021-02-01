@@ -1,10 +1,10 @@
 /*
- * Copyright 2016-2020, Cypress Semiconductor Corporation or a subsidiary of
- * Cypress Semiconductor Corporation. All Rights Reserved.
+ * Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+ * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
- * materials ("Software"), is owned by Cypress Semiconductor Corporation
- * or one of its subsidiaries ("Cypress") and is protected by and subject to
+ * materials ("Software") is owned by Cypress Semiconductor Corporation
+ * or one of its affiliates ("Cypress") and is protected by and subject to
  * worldwide patent protection (United States and foreign),
  * United States copyright laws and international treaty provisions.
  * Therefore, you may use this Software only as provided in the license
@@ -13,7 +13,7 @@
  * If no EULA applies, Cypress hereby grants you a personal, non-exclusive,
  * non-transferable license to copy, modify, and compile the Software
  * source code solely for use in connection with Cypress's
- * integrated circuit products. Any reproduction, modification, translation,
+ * integrated circuit products.  Any reproduction, modification, translation,
  * compilation, or representation of this Software except as specified
  * above is prohibited without the express written permission of Cypress.
  *
@@ -33,9 +33,9 @@
 
 /** @file
  *
- * Remote control
+ * BLE RCU control
  *
- * This file provides definitions and function prototypes for remote control
+ * This file provides definitions and function prototypes for BLE remote control
  * device
  *
  */
@@ -48,22 +48,16 @@
 #include "wiced_bt_trace.h"
 #include "hidd_lib.h"
 
+
 /*******************************************************************************
 * Types and Defines
 *******************************************************************************/
 #define BT_LOCAL_NAME "BLE RCU"
+#define NUM_KEYSCAN_ROWS   3  // Num of Rows in keyscan matrix
+#define NUM_KEYSCAN_COLS   7  // Num of Cols in keyscan matrix
+#define CONNECT_KEY_INDEX  0  // Use none exist key as a virtual connect key
+#define AUDIO_KEY_INDEX    1
 
-#ifdef WICED_EVAL
- #define NUM_KEYSCAN_ROWS   5  // Num of Rows in keyscan matrix
- #define NUM_KEYSCAN_COLS   4  // Num of Cols in keyscan matrix
- #define CONNECT_KEY_INDEX  18 // need to find out from hardware
- #define AUDIO_KEY_INDEX    16
-#else
- #define NUM_KEYSCAN_ROWS   3  // Num of Rows in keyscan matrix
- #define NUM_KEYSCAN_COLS   7  // Num of Cols in keyscan matrix
- #define CONNECT_KEY_INDEX  0  // Use none exist key as a virtual connect key
- #define AUDIO_KEY_INDEX    1
-#endif
 #define CONNECT_INDEX       13 // HOME button hold for 10 sec to enter pairing
 #define CONNECT_COMBO       (1<<CONNECT_INDEX)   // CONNECT COMBO BITS
 #define CONNECT_COMBO_HOLD_TIME 10               // Hold for 10 sec.
@@ -77,8 +71,6 @@
 #define LED_DEBUG(n)        hidd_led_blink(LED_RED_IDX, n, 100)
 #define LED_AUDIO_ON()      hidd_led_on(LED_RED_IDX)
 #define LED_AUDIO_OFF()     hidd_led_off(LED_RED_IDX)
-
-typedef void (app_poll_callback_t)(void);
 /*******************************************************************************
  * Report ID defines
  ********************************************************************************/
@@ -126,12 +118,13 @@ typedef union {
 
 /*******************************************************************************
  * Include all components
- *******************************************************************************/
-#include "battery/battery.h"
-#include "ota/ota.h"
-#include "bt/bt.h"
-#include "key/key.h"
-#include "audio/audio.h"
+*******************************************************************************/
+
+#include "battery.h"
+#include "ota.h"
+#include "bt.h"
+#include "key.h"
+#include "audio.h"
 
 /*******************************************************************************
  * Function Name: app_setReport
@@ -204,4 +197,4 @@ void app_transportStateChangeNotification(uint32_t newState);
  *******************************************************************************/
 wiced_result_t app_start();
 
-#endif // __BLEREMOTE_H__
+#endif

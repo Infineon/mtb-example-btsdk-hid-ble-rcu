@@ -1,10 +1,10 @@
 /*
- * Copyright 2016-2020, Cypress Semiconductor Corporation or a subsidiary of
- * Cypress Semiconductor Corporation. All Rights Reserved.
+ * Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+ * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
- * materials ("Software"), is owned by Cypress Semiconductor Corporation
- * or one of its subsidiaries ("Cypress") and is protected by and subject to
+ * materials ("Software") is owned by Cypress Semiconductor Corporation
+ * or one of its affiliates ("Cypress") and is protected by and subject to
  * worldwide patent protection (United States and foreign),
  * United States copyright laws and international treaty provisions.
  * Therefore, you may use this Software only as provided in the license
@@ -13,7 +13,7 @@
  * If no EULA applies, Cypress hereby grants you a personal, non-exclusive,
  * non-transferable license to copy, modify, and compile the Software
  * source code solely for use in connection with Cypress's
- * integrated circuit products. Any reproduction, modification, translation,
+ * integrated circuit products.  Any reproduction, modification, translation,
  * compilation, or representation of this Software except as specified
  * above is prohibited without the express written permission of Cypress.
  *
@@ -43,15 +43,6 @@
 
 extern wiced_bt_cfg_settings_t bt_cfg;
 extern uint8_t dev_local_name[];
-extern uint8_t blehid_rpt_map[];
-
-#if defined(MOUSE_XY_SIZE_16)
-# define MOUSE_XY_SIZE 16
-#elif defined(MOUSE_XY_SIZE_12)
-# define MOUSE_XY_SIZE 12
-#else
-# define MOUSE_XY_SIZE 8
-#endif
 
 #define STD_KB_REPORT_DESCRIPTOR \
     /* RPT_ID_IN_STD_KEY */ \

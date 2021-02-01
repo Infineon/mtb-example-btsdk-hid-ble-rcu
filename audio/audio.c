@@ -1,10 +1,10 @@
 /*
- * Copyright 2016-2020, Cypress Semiconductor Corporation or a subsidiary of
- * Cypress Semiconductor Corporation. All Rights Reserved.
+ * Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+ * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
- * materials ("Software"), is owned by Cypress Semiconductor Corporation
- * or one of its subsidiaries ("Cypress") and is protected by and subject to
+ * materials ("Software") is owned by Cypress Semiconductor Corporation
+ * or one of its affiliates ("Cypress") and is protected by and subject to
  * worldwide patent protection (United States and foreign),
  * United States copyright laws and international treaty provisions.
  * Therefore, you may use this Software only as provided in the license
@@ -13,7 +13,7 @@
  * If no EULA applies, Cypress hereby grants you a personal, non-exclusive,
  * non-transferable license to copy, modify, and compile the Software
  * source code solely for use in connection with Cypress's
- * integrated circuit products. Any reproduction, modification, translation,
+ * integrated circuit products.  Any reproduction, modification, translation,
  * compilation, or representation of this Software except as specified
  * above is prohibited without the express written permission of Cypress.
  *
@@ -42,7 +42,6 @@
 #ifdef SUPPORT_AUDIO
 #include "wiced.h"
 #include "wiced_bt_trace.h"
-#include "hidd_lib.h"
 #include "app.h"
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -157,8 +156,6 @@ hidd_microphone_enhanced_config_t blehid_audiocfg =
 #endif
 };
 
-//extern hidd_microphone_enhanced_config_t blehid_audiocfg;
-
 // data defines
 uint8_t             voice_rpt[AUDIO_BUFF_LEN] = {};
 hidd_voice_report_t audioData[AUDIO_FIFO_CNT] = {};
@@ -229,7 +226,7 @@ void mic_stop_command_pending_timeout( uint32_t arg )
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-/// This function will be called from blehid_app_init() during start up.
+/// This function will be called from app_start() during start up.
 /////////////////////////////////////////////////////////////////////////////////////////////
 void audio_init(void (*activityDetectedPtr)())
 {
@@ -429,32 +426,15 @@ void audio_stop(void)
     LED_AUDIO_OFF();
 }
 
+#if HID_AUDIO
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 wiced_bool_t audio_button(uint8_t key, wiced_bool_t down)
 {
-#ifdef ANDROID_AUDIO
-    static wiced_bool_t audio_key_pressed = 0;
-#endif
-
-#ifdef ANDROID_AUDIO
-    if (audio_key_pressed)
-    {
-        audio_key_pressed = 0;
-        audio_START_REQ();
-    }
-#endif
-
     if (key == AUDIO_KEY_INDEX)
     {
         WICED_BT_TRACE("\naudio_button %s", down ? "down" : "up");
 
-#ifdef ANDROID_AUDIO
-        if (down)
-        {
-            audio_key_pressed = 1;
-        }
-#else // !ANDROID_AUDIO
         // button down
         if (down)
         {
@@ -479,10 +459,10 @@ wiced_bool_t audio_button(uint8_t key, wiced_bool_t down)
             }
         }
         return TRUE;
-#endif
     }
     return FALSE;
 }
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////
 /// This function polls for voice activity and queues any events in the
@@ -495,7 +475,7 @@ void audio_pollActivityVoice(void)
     {
         while (hidd_mic_audio_poll_activity((void *)&audio.voiceEvent))
         {
-            WICED_BT_TRACE("a");
+//            WICED_BT_TRACE("a");
             audio_DATA();
         }
     }

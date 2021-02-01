@@ -1,10 +1,10 @@
 /*
- * Copyright 2016-2020, Cypress Semiconductor Corporation or a subsidiary of
- * Cypress Semiconductor Corporation. All Rights Reserved.
+ * Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+ * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
- * materials ("Software"), is owned by Cypress Semiconductor Corporation
- * or one of its subsidiaries ("Cypress") and is protected by and subject to
+ * materials ("Software") is owned by Cypress Semiconductor Corporation
+ * or one of its affiliates ("Cypress") and is protected by and subject to
  * worldwide patent protection (United States and foreign),
  * United States copyright laws and international treaty provisions.
  * Therefore, you may use this Software only as provided in the license
@@ -13,7 +13,7 @@
  * If no EULA applies, Cypress hereby grants you a personal, non-exclusive,
  * non-transferable license to copy, modify, and compile the Software
  * source code solely for use in connection with Cypress's
- * integrated circuit products. Any reproduction, modification, translation,
+ * integrated circuit products.  Any reproduction, modification, translation,
  * compilation, or representation of this Software except as specified
  * above is prohibited without the express written permission of Cypress.
  *
@@ -33,10 +33,10 @@
 
 /** @file
 *
-* Remote Control Application
+* BLE RCU
 *
 * The BLE Remote Control application is a single chip SoC compliant with HID over GATT Profile (HOGP).
-* Supported features include key, microphone (voice over HOGP), Infrared Transmit (IR TX).
+* Supported features include key, and voice over HOGP.
 *
 * During initialization the app registers with LE stack, WICED HID Device Library and
 * keyscan and external HW peripherals to receive various notifications including
@@ -193,6 +193,9 @@ static wiced_bool_t APP_connect_button(uint8_t keyCode, wiced_bool_t down)
 static void APP_keyDetected(HidEventKey* kbKeyEvent)
 {
     static uint8_t suppressEndScanCycleAfterConnectButton = TRUE;
+#if ANDROID_AUDIO
+    static uint8_t audio_key_down = FALSE;
+#endif
     uint8_t keyDown = kbKeyEvent->keyEvent.upDownFlag == KEY_DOWN;
     uint8_t keyCode = kbKeyEvent->keyEvent.keyCode;
 
@@ -206,11 +209,14 @@ static void APP_keyDetected(HidEventKey* kbKeyEvent)
 #endif
 
     // Check for buttons
-    if (!APP_combo_key(keyCode, keyDown) &&
+    if (!APP_combo_key(keyCode, keyDown)
 #ifdef WICED_EVAL
-        !APP_connect_button(keyCode, keyDown) &&
+        && !APP_connect_button(keyCode, keyDown)
 #endif
-        !audio_button(keyCode, keyDown))
+#if HID_AUDIO
+        && !audio_button(keyCode, keyDown)
+#endif
+       )
     {
         // Check if this is an end-of-scan cycle event
         if (keyCode == END_OF_SCAN_CYCLE)
@@ -221,6 +227,13 @@ static void APP_keyDetected(HidEventKey* kbKeyEvent)
                 wiced_hidd_event_queue_add_event_with_overflow(&app.eventQueue, &kbKeyEvent->eventInfo, sizeof(HidEventKey), app.pollSeqn);
             }
 
+#if ANDROID_AUDIO
+            if (audio_key_down)
+            {
+                audio_key_down = FALSE;
+                audio_START_REQ();
+            }
+#endif
             // Enable end-of-scan cycle suppression since this is the start of a new cycle
             suppressEndScanCycleAfterConnectButton = TRUE;
         }
@@ -231,6 +244,12 @@ static void APP_keyDetected(HidEventKey* kbKeyEvent)
             // No. Queue the key event
             wiced_hidd_event_queue_add_event_with_overflow(&app.eventQueue, &kbKeyEvent->eventInfo, sizeof(HidEventKey), app.pollSeqn);
 
+#if ANDROID_AUDIO
+            if (keyCode == AUDIO_KEY_INDEX && keyDown)
+            {
+                audio_key_down = TRUE;
+            }
+#endif
             // Disable end-of-scan cycle suppression
             suppressEndScanCycleAfterConnectButton = FALSE;
         }
@@ -378,12 +397,12 @@ static void APP_shutdown(void)
 ///
 /// \return
 ///   Bit mapped value indicating
-///       - HID_APP_ACTIVITY_NON_REPORTABLE - if any key (excluding connect button) is down. Always
+///       - HIDLINK_ACTIVITY_NON_REPORTABLE - if any key (excluding connect button) is down. Always
 ///         set in pin code entry state
-///       - HID_APP_ACTIVITY_REPORTABLE - if any event is queued. Always
+///       - HIDLINK_ACTIVITY_REPORTABLE - if any event is queued. Always
 ///         set in pin code entry state
-///       - HID_APP_ACTIVITY_NONE otherwise
-///  As long as it is not ACTIVITY_NONE, the btlpm will be notified for low power management.
+///       - HIDLINK_ACTIVITY_NONE otherwise
+///  As long as it is not HIDLINK_ACTIVITY_NONE, the btlpm will be notified for low power management.
 ////////////////////////////////////////////////////////////////////////////////
 uint8_t APP_pollActivityUser(void)
 {
@@ -397,6 +416,8 @@ uint8_t APP_pollActivityUser(void)
 
     // For all other cases, return value indicating whether any event is pending or
     status = wiced_hidd_event_queue_get_num_elements(&app.eventQueue) || kscan_is_any_key_pressed() ? HIDLINK_ACTIVITY_REPORTABLE : HIDLINK_ACTIVITY_NONE;
+
+    audio_pollActivityVoice();
 
     return status;
 }
@@ -800,7 +821,7 @@ void app_transportStateChangeNotification(uint32_t newState)
         // enable ghost detection
         kscan_enable_ghost_detection(TRUE);
 
-        hidd_blelink_enable_poll_callback(WICED_TRUE);
+        hidd_link_enable_poll_callback(BT_TRANSPORT_LE, WICED_TRUE);
 
         if(app.firstTransportStateChangeNotification)
         {
@@ -831,7 +852,7 @@ void app_transportStateChangeNotification(uint32_t newState)
         hidd_mic_audio_stop();
 #endif
         // Tell the transport to stop polling
-        hidd_blelink_enable_poll_callback(WICED_FALSE);
+        hidd_link_enable_poll_callback(BT_TRANSPORT_LE, WICED_FALSE);
         break;
 
     case HIDLINK_LE_DISCOVERABLE:
