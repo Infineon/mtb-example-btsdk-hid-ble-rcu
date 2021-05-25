@@ -81,8 +81,8 @@ typedef enum {
     RPT_ID_IN_BATTERY      =0x03,
     RPT_ID_IN_MEDIA_KEY    =0x0a,
     RPT_ID_IN_CNT_CTL      =0xcc,
-    RPT_ID_IN_AUDIO_DATA   =WICED_HIDD_VOICE_REPORT_ID,
-    RPT_ID_IN_AUDIO_CTL    =WICED_HIDD_VOICE_CTL_REPORT_ID,
+    RPT_ID_IN_AUDIO_DATA   =HIDD_VOICE_REPORT_ID,
+    RPT_ID_IN_AUDIO_CTL    =HIDD_VOICE_CTL_REPORT_ID,
     RPT_ID_IN_NOT_USED     =0xff,
     RPT_ID_CLIENT_CHAR_CONF=0xff,
 } rpt_id_in_e;
@@ -90,15 +90,15 @@ typedef enum {
 // Output report id
 typedef enum {
     RPT_ID_OUT_KB_LED      =0x01,
-    RPT_ID_OUT_AUDIO_DATA=WICED_HIDD_VOICE_REPORT_ID,
-    RPT_ID_OUT_AUDIO_CTL =WICED_HIDD_VOICE_CTL_REPORT_ID,
+    RPT_ID_OUT_AUDIO_DATA=HIDD_VOICE_REPORT_ID,
+    RPT_ID_OUT_AUDIO_CTL =HIDD_VOICE_CTL_REPORT_ID,
 } rpt_id_out_e;
 
 // Feature report id
 typedef enum {
     RPT_ID_FEATURE_CNT_CTL =0xcc,
-    RPT_ID_FEATURE_AUDIO_DATA=WICED_HIDD_VOICE_REPORT_ID,
-    RPT_ID_FEATURE_AUDIO_CTL =WICED_HIDD_VOICE_CTL_REPORT_ID,
+    RPT_ID_FEATURE_AUDIO_DATA=HIDD_VOICE_REPORT_ID,
+    RPT_ID_FEATURE_AUDIO_CTL =HIDD_VOICE_CTL_REPORT_ID,
 } rpt_id_feature_e;
 
 /*******************************************************************************

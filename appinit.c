@@ -120,7 +120,11 @@ void application_start( void )
     WICED_BT_TRACE("\nENABLE_AUDIO(CELT)");
  #elif defined(ADPCM_ENCODER)
   #ifdef ANDROID_AUDIO
+   #ifdef ANDROID_AUDIO_1_0
     WICED_BT_TRACE("\nANDROID_AUDIO(ADPCM)");
+   #else
+    WICED_BT_TRACE("\nANDROID_AUDIO 0.4(ADPCM)");
+   #endif
   #else
     WICED_BT_TRACE("\nENABLE_AUDIO(ADPCM)");
   #endif
@@ -128,7 +132,7 @@ void application_start( void )
     WICED_BT_TRACE("\nENABLE_AUDIO(mSBC)");
  #endif
  #ifdef SUPPORT_DIGITAL_MIC
-    WICED_BT_TRACE("\nENABLE_DIGITAL_MIC");
+    WICED_BT_TRACE("\nPDM");
  #endif
 #endif
 
@@ -152,8 +156,8 @@ void application_start( void )
     WICED_BT_TRACE("\nDISCONNECTED_ENDLESS_ADV");
 #endif
 
-#ifdef ASSYM_SLAVE_LATENCY
-    WICED_BT_TRACE("\nASSYMETRIC_SLAVE_LATENCY");
+#ifdef ASSYM_PERIPHERAL_LATENCY
+    WICED_BT_TRACE("\nASSYMETRIC_PERIPHERAL_LATENCY");
 #endif
 
 #ifdef LE_LOCAL_PRIVACY_SUPPORT

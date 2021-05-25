@@ -79,8 +79,8 @@ const uint8_t anti_spoofing_private_key[] = "";
  #endif
 #endif //FASTPAIR_ENABLE
 
-#define blehid_app_gatts_req_read_callback  android_gatts_req_read_callback
-#define blehid_app_gatts_req_write_callback android_gatts_req_write_callback
+#define blehid_app_gatts_req_read_callback  atv_gatts_req_read_callback
+#define blehid_app_gatts_req_write_callback atv_gatts_req_write_callback
 
 /******************************************************************************
  * public data
@@ -230,7 +230,7 @@ typedef enum
 static uint16_t cccd[BLE_RPT_INDX_MAX] = {0,};
 
 /*****************************************************************************
- * This is the attribute table containing LEGATTDB_PERM_READABLE attributes
+ * This is the attribute table containing GATTDB_PERM_READABLE attributes
  ****************************************************************************/
 attribute_t blehid_gattAttributes[] =
 {
@@ -354,7 +354,7 @@ attribute_t blehid_gattAttributes[] =
 #ifdef HID_AUDIO
     {
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_VAL,
-        AUDIO_BUFF_LEN,
+        AUDIO_MTU_SIZE,
         voice_rpt //updated everytime a voice report sent
     },
     {
@@ -433,8 +433,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_GAP_SERVICE_CHAR_DEV_NAME,
         HANDLE_APP_GAP_SERVICE_CHAR_DEV_NAME_VAL,
         GATT_UUID_GAP_DEVICE_NAME,
-        LEGATTDB_CHAR_PROP_READ,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ,
+        GATTDB_PERM_READABLE
     ),
 
     // Declare mandatory GAP service characteristic: Appearance
@@ -443,8 +443,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_GAP_SERVICE_CHAR_DEV_APPEARANCE,
         HANDLE_APP_GAP_SERVICE_CHAR_DEV_APPEARANCE_VAL,
         GATT_UUID_GAP_ICON,
-        LEGATTDB_CHAR_PROP_READ,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ,
+        GATTDB_PERM_READABLE
     ),
 
     // Declare GAP service characteristic: Peripheral Prefered Connection Parameter
@@ -453,8 +453,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_GAP_SERVICE_CHAR_PERI_PREFER_CONNPARAM,
         HANDLE_APP_GAP_SERVICE_CHAR_PERI_PREFER_CONNPARAM_VAL,
         GATT_UUID_GAP_PREF_CONN_PARAM,
-        LEGATTDB_CHAR_PROP_READ,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ,
+        GATTDB_PERM_READABLE
     ),
 
     // Declare Device info service
@@ -467,8 +467,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_DEV_INFO_SERVICE_CHAR_PNP_ID,
         HANDLE_APP_DEV_INFO_SERVICE_CHAR_PNP_ID_VAL,
         GATT_UUID_PNP_ID,
-        LEGATTDB_CHAR_PROP_READ,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ,
+        GATTDB_PERM_READABLE
     ),
 
     // Handle 0x2B: characteristic Manufacturer Name, handle 0x2C characteristic value
@@ -477,8 +477,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_DEV_INFO_SERVICE_CHAR_MFR_NAME,
         HANDLE_APP_DEV_INFO_SERVICE_CHAR_MFR_NAME_VAL,
         GATT_UUID_MANU_NAME,
-        LEGATTDB_CHAR_PROP_READ,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ,
+        GATTDB_PERM_READABLE
     ),
 
     // Handle 0x2D: characteristic Firmware Revision String, handle 0x2E characteristic value
@@ -487,8 +487,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_DEV_INFO_SERVICE_CHAR_FW_VER,
         HANDLE_APP_DEV_INFO_SERVICE_CHAR_FW_VER_VAL,
         GATT_UUID_FW_VERSION_STR,
-        LEGATTDB_CHAR_PROP_READ,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ,
+        GATTDB_PERM_READABLE
     ),
 
 #ifdef BATTERY_REPORT_SUPPORT
@@ -502,8 +502,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_BATTERY_SERVICE_CHAR_LEVEL,       // attribute handle
         HANDLE_APP_BATTERY_SERVICE_CHAR_LEVEL_VAL, // attribute value handle
         GATT_UUID_BATTERY_LEVEL,
-        LEGATTDB_CHAR_PROP_READ|LEGATTDB_CHAR_PROP_NOTIFY,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ|GATTDB_CHAR_PROP_NOTIFY,
+        GATTDB_PERM_READABLE
     ),
 
     // Declare client specific characteristic cfg desc. // Value of the descriptor can be modified by the client
@@ -512,7 +512,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_BATTERY_SERVICE_CHAR_CFG_DESCR,
         GATT_UUID_CHAR_CLIENT_CONFIG,
-        LEGATTDB_PERM_READABLE|LEGATTDB_PERM_WRITE_CMD|LEGATTDB_PERM_WRITE_REQ
+        GATTDB_PERM_READABLE|GATTDB_PERM_WRITE_CMD|GATTDB_PERM_WRITE_REQ
     ),
 
     // Handle 0x34: report reference
@@ -520,7 +520,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_BATTERY_SERVICE_RPT_REF_DESCR,
         GATT_UUID_RPT_REF_DESCR,
-        LEGATTDB_PERM_READABLE
+        GATTDB_PERM_READABLE
     ),
 #endif
 
@@ -534,8 +534,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_SCAN_PARAM_SERVICE_CHAR_SCAN_INT_WINDOW,
         HANDLE_APP_SCAN_PARAM_SERVICE_CHAR_SCAN_INT_WINDOW_VAL,
         GATT_UUID_SCAN_INT_WINDOW,
-        LEGATTDB_CHAR_PROP_WRITE_NO_RESPONSE,
-        LEGATTDB_PERM_WRITE_CMD | LEGATTDB_PERM_WRITE_REQ
+        GATTDB_CHAR_PROP_WRITE_NO_RESPONSE,
+        GATTDB_PERM_WRITE_CMD | GATTDB_PERM_WRITE_REQ
     ),
 
     // Declare HID over LE
@@ -560,8 +560,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_HID_CTRL_POINT,
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_HID_CTRL_POINT_VAL,
         GATT_UUID_HID_CONTROL_POINT,
-        LEGATTDB_CHAR_PROP_WRITE_NO_RESPONSE,
-        LEGATTDB_PERM_WRITE_CMD
+        GATTDB_CHAR_PROP_WRITE_NO_RESPONSE,
+        GATTDB_PERM_WRITE_CMD
     ),
 
     // Handle 0x53: characteristic HID information, handle 0x54 characteristic value
@@ -570,8 +570,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_LE_HID_SERVICE_HID_INFO,
         HANDLE_APP_LE_HID_SERVICE_HID_INFO_VAL,
         GATT_UUID_HID_INFORMATION,
-        LEGATTDB_CHAR_PROP_READ,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ,
+        GATTDB_PERM_READABLE
     ),
 
     // Handle 0x55: characteristic HID Report MAP, handle 0x56 characteristic value
@@ -580,8 +580,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_MAP,
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_MAP_VAL,
         GATT_UUID_HID_REPORT_MAP,
-        LEGATTDB_CHAR_PROP_READ,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ,
+        GATTDB_PERM_READABLE
     ),
 
     // include Battery Service
@@ -590,7 +590,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_EXT_RPT_REF_DESCR,
         GATT_UUID_EXT_RPT_REF_DESCR,
-        LEGATTDB_PERM_READABLE
+        GATTDB_PERM_READABLE
     ),
 
     // STD Input report
@@ -600,8 +600,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_INPUT,
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_INPUT_VAL,
         GATT_UUID_HID_REPORT,
-        LEGATTDB_CHAR_PROP_READ|LEGATTDB_CHAR_PROP_NOTIFY,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ|GATTDB_CHAR_PROP_NOTIFY,
+        GATTDB_PERM_READABLE
     ),
 
     // Declare client specific characteristic cfg desc. // Value of the descriptor can be modified by the client
@@ -610,7 +610,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_INPUT_CHAR_CFG_DESCR,
         GATT_UUID_CHAR_CLIENT_CONFIG,
-        LEGATTDB_PERM_READABLE|LEGATTDB_PERM_WRITE_CMD|LEGATTDB_PERM_WRITE_REQ
+        GATTDB_PERM_READABLE|GATTDB_PERM_WRITE_CMD|GATTDB_PERM_WRITE_REQ
     ),
 
     // Handle 0x60: report reference
@@ -618,7 +618,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_INPUT_RPT_REF_DESCR,
         GATT_UUID_RPT_REF_DESCR,
-        LEGATTDB_PERM_READABLE
+        GATTDB_PERM_READABLE
     ),
 
     // STD Output report
@@ -628,8 +628,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_OUTPUT,
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_OUTPUT_VAL,
         GATT_UUID_HID_REPORT,
-        LEGATTDB_CHAR_PROP_READ|LEGATTDB_CHAR_PROP_WRITE_NO_RESPONSE|LEGATTDB_CHAR_PROP_WRITE,
-        LEGATTDB_PERM_READABLE|LEGATTDB_PERM_WRITE_CMD|LEGATTDB_PERM_WRITE_REQ
+        GATTDB_CHAR_PROP_READ|GATTDB_CHAR_PROP_WRITE_NO_RESPONSE|GATTDB_CHAR_PROP_WRITE,
+        GATTDB_PERM_READABLE|GATTDB_PERM_WRITE_CMD|GATTDB_PERM_WRITE_REQ
     ),
 
     // Handle 0x63: report reference
@@ -637,7 +637,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_OUTPUT_RPT_REF_DESCR,
         GATT_UUID_RPT_REF_DESCR,
-        LEGATTDB_PERM_READABLE
+        GATTDB_PERM_READABLE
     ),
 
     // Bit mapped report, Report ID=2
@@ -647,8 +647,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_BITMAP,
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_BITMAP_VAL,
         GATT_UUID_HID_REPORT,
-        LEGATTDB_CHAR_PROP_READ|LEGATTDB_CHAR_PROP_NOTIFY,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ|GATTDB_CHAR_PROP_NOTIFY,
+        GATTDB_PERM_READABLE
     ),
 
     // Declare client specific characteristic cfg desc. // Value of the descriptor can be modified by the client
@@ -657,7 +657,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_BITMAP_CHAR_CFG_DESCR,
         GATT_UUID_CHAR_CLIENT_CONFIG,
-        LEGATTDB_PERM_READABLE|LEGATTDB_PERM_WRITE_CMD|LEGATTDB_PERM_WRITE_REQ
+        GATTDB_PERM_READABLE|GATTDB_PERM_WRITE_CMD|GATTDB_PERM_WRITE_REQ
     ),
 
    // Handle 0x67: report reference
@@ -665,7 +665,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_BITMAP_RPT_REF_DESCR,
         GATT_UUID_RPT_REF_DESCR,
-        LEGATTDB_PERM_READABLE
+        GATTDB_PERM_READABLE
     ),
 
     // user defined 0 report
@@ -675,8 +675,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_USER_DEFINED_0,
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_USER_DEFINED_0_VAL,
         GATT_UUID_HID_REPORT,
-        LEGATTDB_CHAR_PROP_READ|LEGATTDB_CHAR_PROP_NOTIFY,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ|GATTDB_CHAR_PROP_NOTIFY,
+        GATTDB_PERM_READABLE
     ),
 
     // Declare client specific characteristic cfg desc. // Value of the descriptor can be modified by the client
@@ -685,7 +685,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_USER_DEFINED_0_CHAR_CFG_DESCR,
         GATT_UUID_CHAR_CLIENT_CONFIG,
-        LEGATTDB_PERM_READABLE|LEGATTDB_PERM_WRITE_CMD|LEGATTDB_PERM_WRITE_REQ
+        GATTDB_PERM_READABLE|GATTDB_PERM_WRITE_CMD|GATTDB_PERM_WRITE_REQ
     ),
 
     // Handle 0x6F: report reference
@@ -693,7 +693,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_USER_DEFINED_0_RPT_REF_DESCR,
         GATT_UUID_RPT_REF_DESCR,
-        LEGATTDB_PERM_READABLE
+        GATTDB_PERM_READABLE
     ),
 
 #ifdef HID_AUDIO
@@ -704,8 +704,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE,
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_VAL,
         GATT_UUID_HID_REPORT,
-        LEGATTDB_CHAR_PROP_READ|LEGATTDB_CHAR_PROP_NOTIFY,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ|GATTDB_CHAR_PROP_NOTIFY,
+        GATTDB_PERM_READABLE
     ),
 
     // Declare client specific characteristic cfg desc. // Value of the descriptor can be modified by the client
@@ -714,7 +714,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CHAR_CFG_DESCR,
         GATT_UUID_CHAR_CLIENT_CONFIG,
-        LEGATTDB_PERM_READABLE|LEGATTDB_PERM_WRITE_CMD|LEGATTDB_PERM_WRITE_REQ
+        GATTDB_PERM_READABLE|GATTDB_PERM_WRITE_CMD|GATTDB_PERM_WRITE_REQ
     ),
 
     // Handle 0x73: report reference
@@ -722,7 +722,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_RPT_REF_DESCR,
         GATT_UUID_RPT_REF_DESCR,
-        LEGATTDB_PERM_READABLE
+        GATTDB_PERM_READABLE
     ),
 
     //Voice Ctl INPUT report (remote->host)
@@ -732,8 +732,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_INPUT,
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_INPUT_VAL,
         GATT_UUID_HID_REPORT,
-        LEGATTDB_CHAR_PROP_READ|LEGATTDB_CHAR_PROP_NOTIFY,
-        LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_READ|GATTDB_CHAR_PROP_NOTIFY,
+        GATTDB_PERM_READABLE
     ),
 
     // Declare client specific characteristic cfg desc. // Value of the descriptor can be modified by the client
@@ -742,7 +742,7 @@ uint8_t blehid_db_data[]=
     (
          HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_INPUT_CHAR_CFG_DESCR,
          GATT_UUID_CHAR_CLIENT_CONFIG,
-         LEGATTDB_PERM_READABLE|LEGATTDB_PERM_WRITE_CMD|LEGATTDB_PERM_WRITE_REQ
+         GATTDB_PERM_READABLE|GATTDB_PERM_WRITE_CMD|GATTDB_PERM_WRITE_REQ
     ),
 
     // Handle 0x77: report reference
@@ -750,7 +750,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_INPUT_RPT_REF_DESCR,
         GATT_UUID_RPT_REF_DESCR,
-        LEGATTDB_PERM_READABLE
+        GATTDB_PERM_READABLE
     ),
 
     //Voice Ctl FEATURE report (host->remote)
@@ -760,8 +760,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_FEA,
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_FEA_VAL,
         GATT_UUID_HID_REPORT,
-        LEGATTDB_CHAR_PROP_READ|LEGATTDB_CHAR_PROP_WRITE,
-        LEGATTDB_PERM_READABLE|LEGATTDB_PERM_WRITE_CMD|LEGATTDB_PERM_WRITE_REQ
+        GATTDB_CHAR_PROP_READ|GATTDB_CHAR_PROP_WRITE,
+        GATTDB_PERM_READABLE|GATTDB_PERM_WRITE_CMD|GATTDB_PERM_WRITE_REQ
     ),
 
     // Handle 0x7A: report reference
@@ -769,7 +769,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_FEA_RPT_REF_DESCR,
         GATT_UUID_RPT_REF_DESCR,
-        LEGATTDB_PERM_READABLE
+        GATTDB_PERM_READABLE
     ),
 #endif
 
@@ -780,8 +780,8 @@ uint8_t blehid_db_data[]=
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_CONNECTION_CTRL,
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_CONNECTION_CTRL_VAL,
         GATT_UUID_HID_REPORT,
-        LEGATTDB_CHAR_PROP_READ|LEGATTDB_CHAR_PROP_WRITE,
-        LEGATTDB_PERM_READABLE|LEGATTDB_PERM_WRITE_REQ
+        GATTDB_CHAR_PROP_READ|GATTDB_CHAR_PROP_WRITE,
+        GATTDB_PERM_READABLE|GATTDB_PERM_WRITE_REQ
     ),
 
     // Handle 0x81: report reference
@@ -789,7 +789,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_APP_LE_HID_SERVICE_HID_RPT_CONNECTION_CTRL_RPT_REF_DESCR,
         GATT_UUID_RPT_REF_DESCR,
-        LEGATTDB_PERM_READABLE
+        GATTDB_PERM_READABLE
     ),
 
 #ifdef FASTPAIR_ENABLE
@@ -799,32 +799,32 @@ uint8_t blehid_db_data[]=
     CHARACTERISTIC_UUID16_WRITABLE (HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING,
                                     HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING_VAL,
                                     WICED_BT_GFPS_UUID_CHARACTERISTIC_KEY_PAIRING,
-                                    LEGATTDB_CHAR_PROP_WRITE | LEGATTDB_CHAR_PROP_NOTIFY,
-                                    LEGATTDB_PERM_READABLE | LEGATTDB_PERM_WRITE_REQ),
+                                    GATTDB_CHAR_PROP_WRITE | GATTDB_CHAR_PROP_NOTIFY,
+                                    GATTDB_PERM_READABLE | GATTDB_PERM_WRITE_REQ),
 
     CHAR_DESCRIPTOR_UUID16_WRITABLE(HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING_CFG_DESC,
                                     UUID_DESCRIPTOR_CLIENT_CHARACTERISTIC_CONFIGURATION,
-                                    LEGATTDB_PERM_AUTH_READABLE | LEGATTDB_PERM_WRITE_REQ),
+                                    GATTDB_PERM_AUTH_READABLE | GATTDB_PERM_WRITE_REQ),
 
     CHARACTERISTIC_UUID16_WRITABLE (HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY,
                                     HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY_VAL,
                                     WICED_BT_GFPS_UUID_CHARACTERISTIC_PASSKEY,
-                                    LEGATTDB_CHAR_PROP_WRITE | LEGATTDB_CHAR_PROP_NOTIFY,
-                                    LEGATTDB_PERM_READABLE | LEGATTDB_PERM_WRITE_REQ),
+                                    GATTDB_CHAR_PROP_WRITE | GATTDB_CHAR_PROP_NOTIFY,
+                                    GATTDB_PERM_READABLE | GATTDB_PERM_WRITE_REQ),
 
     CHAR_DESCRIPTOR_UUID16_WRITABLE(HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY_CFG_DESC,
                                     UUID_DESCRIPTOR_CLIENT_CHARACTERISTIC_CONFIGURATION,
-                                    LEGATTDB_PERM_AUTH_READABLE | LEGATTDB_PERM_WRITE_REQ),
+                                    GATTDB_PERM_AUTH_READABLE | GATTDB_PERM_WRITE_REQ),
 
     CHARACTERISTIC_UUID16_WRITABLE (HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY,
                                     HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY_VAL,
                                     WICED_BT_GFPS_UUID_CHARACTERISTIC_ACCOUNT_KEY,
-                                    LEGATTDB_CHAR_PROP_WRITE,
-                                    LEGATTDB_PERM_READABLE | LEGATTDB_PERM_WRITE_REQ),
+                                    GATTDB_CHAR_PROP_WRITE,
+                                    GATTDB_PERM_READABLE | GATTDB_PERM_WRITE_REQ),
 
     CHAR_DESCRIPTOR_UUID16_WRITABLE(HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY_CFG_DESC,
                                     UUID_DESCRIPTOR_CLIENT_CHARACTERISTIC_CONFIGURATION,
-                                    LEGATTDB_PERM_AUTH_READABLE | LEGATTDB_PERM_WRITE_REQ),
+                                    GATTDB_PERM_AUTH_READABLE | GATTDB_PERM_WRITE_REQ),
 #endif
 
 #ifdef ANDROID_AUDIO
@@ -838,8 +838,8 @@ uint8_t blehid_db_data[]=
         HANDLE_ATV_VOICE_TX_CHARACTERISTIC,
         HANDLE_ATV_VOICE_TX_CHARACTERISTIC_VALUE,
         UUID_ATV_VOICE_TX_CHARACTERISTIC,
-        LEGATTDB_CHAR_PROP_WRITE,
-        LEGATTDB_PERM_VARIABLE_LENGTH | LEGATTDB_PERM_WRITE_REQ  | LEGATTDB_PERM_AUTH_WRITABLE
+        GATTDB_CHAR_PROP_WRITE,
+        GATTDB_PERM_VARIABLE_LENGTH | GATTDB_PERM_WRITE_REQ  | GATTDB_PERM_AUTH_WRITABLE
     ),
 
     // Handles 0xfe03: Read characteristic (ATVV_CHAR_RX), handle 0xfe04 characteristic value.
@@ -848,8 +848,8 @@ uint8_t blehid_db_data[]=
         HANDLE_ATV_VOICE_RX_CHARACTERISTIC,
         HANDLE_ATV_VOICE_RX_CHARACTERISTIC_VALUE,
         UUID_ATV_VOICE_RX_CHARACTERISTIC,
-        LEGATTDB_CHAR_PROP_NOTIFY | LEGATTDB_CHAR_PROP_READ,
-        LEGATTDB_PERM_VARIABLE_LENGTH | LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_NOTIFY | GATTDB_CHAR_PROP_READ,
+        GATTDB_PERM_VARIABLE_LENGTH | GATTDB_PERM_READABLE
     ),
 
     // Handle 0xfe05
@@ -857,7 +857,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_ATV_VOICE_RX_CLIENT_CONFIGURATION_DESCRIPTOR,
         UUID_DESCRIPTOR_CLIENT_CHARACTERISTIC_CONFIGURATION,
-        LEGATTDB_PERM_READABLE | LEGATTDB_PERM_WRITE_CMD | LEGATTDB_PERM_WRITE_REQ | LEGATTDB_PERM_AUTH_WRITABLE
+        GATTDB_PERM_READABLE | GATTDB_PERM_WRITE_CMD | GATTDB_PERM_WRITE_REQ | GATTDB_PERM_AUTH_WRITABLE
     ),
 
     // Handles 0xfe06: Read characteristic (ATVV_CHAR_RX), handle 0xfe07 characteristic value.
@@ -866,8 +866,8 @@ uint8_t blehid_db_data[]=
         HANDLE_ATV_VOICE_CTL_CHARACTERISTIC,
         HANDLE_ATV_VOICE_CTL_CHARACTERISTIC_VALUE,
         UUID_ATV_VOICE_CTL_CHARACTERISTIC,
-        LEGATTDB_CHAR_PROP_NOTIFY | LEGATTDB_CHAR_PROP_READ,
-        LEGATTDB_PERM_VARIABLE_LENGTH | LEGATTDB_PERM_READABLE
+        GATTDB_CHAR_PROP_NOTIFY | GATTDB_CHAR_PROP_READ,
+        GATTDB_PERM_VARIABLE_LENGTH | GATTDB_PERM_READABLE
     ),
 
     // Handle 0xfe08
@@ -875,7 +875,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_ATV_VOICE_CTL_CLIENT_CONFIGURATION_DESCRIPTOR,
         UUID_DESCRIPTOR_CLIENT_CHARACTERISTIC_CONFIGURATION,
-        LEGATTDB_PERM_READABLE | LEGATTDB_PERM_WRITE_CMD | LEGATTDB_PERM_WRITE_REQ | LEGATTDB_PERM_AUTH_WRITABLE
+        GATTDB_PERM_READABLE | GATTDB_PERM_WRITE_CMD | GATTDB_PERM_WRITE_REQ | GATTDB_PERM_AUTH_WRITABLE
     ),
 #endif
 
@@ -896,8 +896,8 @@ uint8_t blehid_db_data[]=
         HANDLE_OTA_FW_UPGRADE_CHARACTERISTIC_CONTROL_POINT,
         HANDLE_OTA_FW_UPGRADE_CONTROL_POINT,
         UUID_OTA_FW_UPGRADE_CHARACTERISTIC_CONTROL_POINT,
-        LEGATTDB_CHAR_PROP_WRITE | LEGATTDB_CHAR_PROP_NOTIFY | LEGATTDB_CHAR_PROP_INDICATE,
-        LEGATTDB_PERM_VARIABLE_LENGTH | LEGATTDB_PERM_WRITE_REQ /*| LEGATTDB_PERM_AUTH_WRITABLE*/
+        GATTDB_CHAR_PROP_WRITE | GATTDB_CHAR_PROP_NOTIFY | GATTDB_CHAR_PROP_INDICATE,
+        GATTDB_PERM_VARIABLE_LENGTH | GATTDB_PERM_WRITE_REQ /*| GATTDB_PERM_AUTH_WRITABLE*/
     ),
 
     // Declare client characteristic configuration descriptor
@@ -909,7 +909,7 @@ uint8_t blehid_db_data[]=
     (
         HANDLE_OTA_FW_UPGRADE_CLIENT_CONFIGURATION_DESCRIPTOR,
         UUID_DESCRIPTOR_CLIENT_CHARACTERISTIC_CONFIGURATION,
-        LEGATTDB_PERM_READABLE | LEGATTDB_PERM_WRITE_REQ /*| LEGATTDB_PERM_AUTH_WRITABLE */
+        GATTDB_PERM_READABLE | GATTDB_PERM_WRITE_REQ /*| GATTDB_PERM_AUTH_WRITABLE */
     ),
 
     // Handle 0xff07: characteristic WS Data, handle 0xff08 characteristic value. This
@@ -919,8 +919,8 @@ uint8_t blehid_db_data[]=
         HANDLE_OTA_FW_UPGRADE_CHARACTERISTIC_DATA,
         HANDLE_OTA_FW_UPGRADE_DATA,
         UUID_OTA_FW_UPGRADE_CHARACTERISTIC_DATA,
-        LEGATTDB_CHAR_PROP_WRITE,
-        LEGATTDB_PERM_VARIABLE_LENGTH | LEGATTDB_PERM_WRITE_REQ | LEGATTDB_PERM_RELIABLE_WRITE
+        GATTDB_CHAR_PROP_WRITE,
+        GATTDB_PERM_VARIABLE_LENGTH | GATTDB_PERM_WRITE_REQ | GATTDB_PERM_RELIABLE_WRITE
     ),
 #endif
 };
@@ -1235,7 +1235,7 @@ wiced_blehidd_report_gatt_characteristic_t reportModeGattMap[] =
 #ifdef HID_AUDIO
     //voice data input report
     {
-        .reportId           =WICED_HIDD_VOICE_REPORT_ID,
+        .reportId           =HIDD_VOICE_REPORT_ID,
         .reportType         =WICED_HID_REPORT_TYPE_INPUT,
         .handle             =HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_VAL,
         .sendNotification   =FALSE,

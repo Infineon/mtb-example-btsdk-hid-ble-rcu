@@ -112,7 +112,7 @@ static void APP_combo_key_timeout( uint32_t arg )
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-/// Function Name: APP_connect_button
+/// Function Name: APP_combo_key
 /////////////////////////////////////////////////////////////////////////////////
 /// Checks for if the current key is connet button.
 /// If it is, handle the action accordingly and return TRUE to indicate it is taken care of.

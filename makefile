@@ -98,7 +98,7 @@ SLEEP_ALLOWED_DEFAULT=1
 #  LED=0  Disable LED functions (Good for power consumption measurement)
 #  LED=1  Use LED for status indication
 #
-LED_SUPPORT_DEFAULT=1
+LED_DEFAULT=1
 
 ####################################################
 # Use OTA_FW_UPGRADE=1 to enable Over-the-air firmware upgrade functionality
@@ -109,19 +109,18 @@ OTA_FW_UPGRADE_DEFAULT=1
 OTA_SEC_FW_UPGRADE_DEFAULT=0
 
 ####################################################
-# Use ENABLE_AUDIO=1 to enable audio microphone
-# When ENABLE_ANDROID_AUDIO is enabled, ENABLE_AUDIO is forced to be 1, ADPCM_ENCODER is forced to 1
-# Audio encoding flags takes effect only if ENABLE_AUDIO flag is turned on.
-# Use OPUS_CELT_ENCODER=1 to use OPUS CELT encoder, or
-# Use ADPCM_ENCODER=1 to use ACPCM encoder, when not defined, the default is mSBC.
-# Both OPUS_CELT_ENCODER and ADPCM_ENCODER flags cannot be turned on at the same time.
-# Use ENABLE_DIGITAL_MIC=1 to enable digital microphone, ENABLE_DIGITAL_MIC=0 to use analog microphone
+# AUDIO=XXXX where XXXX is:
 #
-ENABLE_ANDROID_AUDIO_DEFAULT=1
-ENABLE_AUDIO_DEFAULT=1
-ENABLE_DIGITAL_MIC_DEFAULT=0
-OPUS_CELT_ENCODER_DEFAULT=0
-ADPCM_ENCODER_DEFAULT=1
+#            - leave empty to disable audio
+#   OPUS     - use OPUS CELT encoder
+#   GOOGLE04 - use ADPCM encoder, Google Voice 0.4
+#   GOOGLE   - use ADPCM encoder, Google Voice 1.0
+#   MSBC     - use mSBC encoder
+#
+# Use PDM=1 to enable digital microphone, PDM=0 to use analog microphone
+#
+AUDIO_DEFAULT=GOOGLE
+PDM_DEFAULT=0
 
 ####################################################
 # Link related flags
@@ -142,8 +141,8 @@ ENABLE_CONNECTED_ADV_DEFAULT=0
 # Use DISCONNECTED_ENDLESS_ADV=1 to enable endless advertising. Otherwise, the advertisement expires in given period.
 DISCONNECTED_ENDLESS_ADV_DEFAULT=0
 
-# Use ASSYMETRIC_SLAVE_LATENCY=1 if master won't accept slave connection parameter update request.
-ASSYMETRIC_SLAVE_LATENCY_DEFAULT=0
+# Use ASSYMETRIC_PERIPHERAL_LATENCY=1 if central won't accept peripheral connection parameter update request.
+ASSYMETRIC_PERIPHERAL_LATENCY_DEFAULT=0
 
 # Use LE_LOCAL_PRIVACY=1 to advertise with Resolvable Private Address (RPA)
 LE_LOCAL_PRIVACY_DEFAULT=0
@@ -155,20 +154,17 @@ UART?=AUTO
 TESTING_USING_HCI ?= $(TESTING_USING_HCI_DEFAULT)
 OTA_FW_UPGRADE ?= $(OTA_FW_UPGRADE_DEFAULT)
 OTA_SEC_FW_UPGRADE ?= $(OTA_SEC_FW_UPGRADE_DEFAULT)
-ENABLE_ANDROID_AUDIO ?= $(ENABLE_ANDROID_AUDIO_DEFAULT)
-ENABLE_AUDIO ?= $(ENABLE_AUDIO_DEFAULT)
-OPUS_CELT_ENCODER ?= $(OPUS_CELT_ENCODER_DEFAULT)
-ADPCM_ENCODER ?= $(ADPCM_ENCODER_DEFAULT)
-ENABLE_DIGITAL_MIC ?= $(ENABLE_DIGITAL_MIC_DEFAULT)
+AUDIO ?= $(AUDIO_DEFAULT)
+PDM ?= $(PDM_DEFAULT)
 AUTO_RECONNECT ?= $(AUTO_RECONNECT_DEFAULT)
 SKIP_PARAM_UPDATE ?= $(SKIP_PARAM_UPDATE_DEFAULT)
+LE_LOCAL_PRIVACY ?= $(LE_LOCAL_PRIVACY_DEFAULT)
 START_ADV_ON_POWERUP ?= $(START_ADV_ON_POWERUP_DEFAULT)
 ENABLE_CONNECTED_ADV ?= $(ENABLE_CONNECTED_ADV_DEFAULT)
 DISCONNECTED_ENDLESS_ADV ?= $(DISCONNECTED_ENDLESS_ADV_DEFAULT)
-ASSYMETRIC_SLAVE_LATENCY ?= $(ASSYMETRIC_SLAVE_LATENCY_DEFAULT)
-LE_LOCAL_PRIVACY ?= $(LE_LOCAL_PRIVACY_DEFAULT)
+ASSYMETRIC_PERIPHERAL_LATENCY ?= $(ASSYMETRIC_PERIPHERAL_LATENCY_DEFAULT)
 SLEEP_ALLOWED ?= $(SLEEP_ALLOWED_DEFAULT)
-LED ?= $(LED_SUPPORT_DEFAULT)
+LED ?= $(LED_DEFAULT)
 
 #
 # App defines
@@ -176,6 +172,7 @@ LED ?= $(LED_SUPPORT_DEFAULT)
 CY_APP_DEFINES = \
   -DSUPPORT_KEYSCAN \
   -DBATTERY_REPORT_SUPPORT \
+  -DBLE_SUPPORT \
   -DSUPPORT_KEY_REPORT \
   -DWICED_BT_TRACE_ENABLE \
   -DLED_SUPPORT=$(LED) \
@@ -194,10 +191,8 @@ else
  endif
 endif
 
-CY_APP_DEFINES += -DBLE_SUPPORT
-
-ifeq ($(ASSYMETRIC_SLAVE_LATENCY),1)
- CY_APP_DEFINES += -DASSYM_SLAVE_LATENCY
+ifeq ($(ASSYMETRIC_PERIPHERAL_LATENCY),1)
+ CY_APP_DEFINES += -DASSYM_PERIPHERAL_LATENCY
 endif
 
 ifeq ($(SKIP_PARAM_UPDATE),1)
@@ -212,55 +207,33 @@ ifeq ($(TESTING_USING_HCI),1)
  CY_APP_DEFINES += -DTESTING_USING_HCI
 endif
 
-ifeq ($(ENABLE_ANDROID_AUDIO),1)
- ENABLE_AUDIO=1
-endif
-
-ifeq ($(ENABLE_AUDIO),1)
- CY_APP_DEFINES += -DSUPPORT_AUDIO
-
- ifeq ($(ENABLE_ANDROID_AUDIO),1)
-  CY_APP_DEFINES += -DANDROID_AUDIO
-  ifneq ($(OPUS_CELT_ENCODER),0)
-   $(error OPUS_CELT encoding is not supported in Android audio)
-  endif
-  ifneq ($(ADPCM_ENCODER),1)
-   $(warning Android audio is using ADPCM encording, ADPCM_ENCODER=1 is enforced)
-   ADPCM_ENCODER=1
-  endif
+ifeq ($(AUDIO),OPUS)
+ CY_APP_DEFINES += -DSUPPORT_AUDIO -DENABLE_ADC_AUDIO_ENHANCEMENTS -DCELT_ENCODER -DHID_AUDIO -DATT_MTU_SIZE_180
+# $(warning Audio OPUS encoding)
+else
+ ifeq ($(AUDIO),GOOGLE04)
+  CY_APP_DEFINES += -DSUPPORT_AUDIO -DENABLE_ADC_AUDIO_ENHANCEMENTS -DADPCM_ENCODER -DANDROID_AUDIO
+  CY_APP_PATCH_LIBS += adpcm_lib.a
+#  $(warning Google Voice 0.4)
  else
-  CY_APP_DEFINES += -DHID_AUDIO
-  # send audio data as 1 big gatt packet
-  CY_APP_DEFINES += -DATT_MTU_SIZE_180
- endif
-
- #enabled audio enhancement
- CY_APP_DEFINES += -DENABLE_ADC_AUDIO_ENHANCEMENTS
-
- #CY_APP_PATCH_LIBS += adc_audio_lib.a
-
- ifeq ($(OPUS_CELT_ENCODER), 1)
-  ifeq ($(ADPCM_ENCODER),1)
-   $(error Multiple audio encoding: OPUS_CELT and ADPCM cannot be enabled at the same time)
-  endif
-  #use OPUS CELT encoder
-  CY_APP_DEFINES += -DCELT_ENCODER
- else
-  ifeq ($(ADPCM_ENCODER), 1)
-   CY_APP_DEFINES += -DADPCM_ENCODER
+  ifeq ($(AUDIO),GOOGLE)
+   CY_APP_DEFINES += -DSUPPORT_AUDIO -DENABLE_ADC_AUDIO_ENHANCEMENTS -DADPCM_ENCODER -DANDROID_AUDIO -DANDROID_AUDIO_1_0
    CY_APP_PATCH_LIBS += adpcm_lib.a
+#   $(warning Google Voice 1.0)
   else
-   #use mSBC encoder
-   CY_APP_DEFINES += -DSBC_ENCODER
-   #enabled only if 256 Kbyte/2M Bit Sflash is used; default is 512 Kbyte/4M Bit Sflash
-   #CY_APP_DEFINES += -DSFLASH_SIZE_2M_BITS
-  endif # ADPCM_ENCODER
- endif # OPUS_CELT_ENCODER
-
- ifeq ($(ENABLE_DIGITAL_MIC),1)
-  CY_APP_DEFINES += -DSUPPORT_DIGITAL_MIC
+   ifeq ($(AUDIO),MSBC)
+    CY_APP_DEFINES += -DSUPPORT_AUDIO -DENABLE_ADC_AUDIO_ENHANCEMENTS -DSBC_ENCODER -DHID_AUDIO -DATT_MTU_SIZE_180
+#    $(warning Audio mSBC encoding)
+   else
+    ifneq ($(AUDIO),)
+     $(error AUDIO=xxxx, where xxxx must be 'OPUS', 'GOOGLE', 'GOOGLE04', or 'MSBC')
+    else
+#     $(warning Audio disabled)
+    endif
+   endif
+  endif
  endif
-endif # ENABLE_AUDIO
+endif
 
 ifeq ($(AUTO_RECONNECT),1)
  CY_APP_DEFINES += -DAUTO_RECONNECT
@@ -281,7 +254,7 @@ endif
 ifeq ($(OTA_FW_UPGRADE),1)
  # DEFINES
  CY_APP_DEFINES += -DOTA_FIRMWARE_UPGRADE
- CY_APP_DEFINES += -DDISABLED_SLAVE_LATENCY_ONLY
+ CY_APP_DEFINES += -DDISABLED_PERIPHERAL_LATENCY_ONLY
  CY_APP_DEFINES += -DOTA_SKIP_CONN_PARAM_UPDATE
  ifeq ($(OTA_SEC_FW_UPGRADE), 1)
   CY_APP_DEFINES += -DOTA_SECURE_FIRMWARE_UPGRADE
@@ -344,6 +317,6 @@ CY_BT_APP_TOOLS=BTSpy ClientControl
 
 -include internal.mk
 ifeq ($(filter $(TARGET),$(SUPPORTED_TARGETS)),)
- $(error TARGET $(TARGET) not supported. Please use one of $(SUPPORTED_TARGETS))
+$(error TARGET $(TARGET) not supported for this application. Edit SUPPORTED_TARGETS in the code example makefile to add new BSPs)
 endif
 include $(CY_TOOLS_DIR)/make/start.mk
