@@ -40,7 +40,6 @@
 #ifdef SUPPORT_KEYSCAN
 
 #include "app.h"
-#include "wiced_hal_mia.h"
 
 typedef struct {
     keyPressDetected_callback_t * appCb;

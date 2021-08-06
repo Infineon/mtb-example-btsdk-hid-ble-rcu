@@ -55,6 +55,7 @@
 #define BT_LOCAL_NAME "BLE RCU"
 #define NUM_KEYSCAN_ROWS   3  // Num of Rows in keyscan matrix
 #define NUM_KEYSCAN_COLS   7  // Num of Cols in keyscan matrix
+#define NUM_MAX_KEY (NUM_KEYSCAN_ROWS*NUM_KEYSCAN_COLS)
 #define CONNECT_KEY_INDEX  0  // Use none exist key as a virtual connect key
 #define AUDIO_KEY_INDEX    1
 

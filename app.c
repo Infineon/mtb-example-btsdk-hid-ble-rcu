@@ -129,63 +129,31 @@ static void APP_combo_key_timeout( uint32_t arg )
 ////////////////////////////////////////////////////////////////////////////////
 static wiced_bool_t APP_combo_key(uint8_t keyCode, wiced_bool_t down)
 {
-    if (down)
-    {
-        app.keyStatus |= (1<<keyCode);
-    }
-    else
-    {
-        app.keyStatus &= ~(1<<keyCode);
-    }
-
-    switch (app.keyStatus) {
-    case CONNECT_COMBO:
-        hidd_led_on(LED_RED_IDX);
-        WICED_BT_TRACE("\nStart Connect timer");
-        wiced_start_timer(&app.combokey_timer, CONNECT_COMBO_HOLD_TIME);
-        break;
-    default:
-        hidd_led_off(LED_RED_IDX);
-        if (wiced_is_timer_in_use(&app.combokey_timer))
-        {
-            WICED_BT_TRACE("\nStop connect timer");
-            wiced_stop_timer(&app.combokey_timer);
-        }
-        break;
-    }
-    return FALSE;
-}
-
-#ifdef WICED_EVAL
-/////////////////////////////////////////////////////////////////////////////////
-/// Function Name: APP_connect_button
-/////////////////////////////////////////////////////////////////////////////////
-/// Checks for if the current key is connet button.
-/// If it is, handle the action accordingly and return TRUE to indicate it is taken care of.
-/// Otherwise, it returns FALSE.
-///
-/// Parameter:
-///   keyCode -- the key to check.
-///   Down -- TRUE to indicate the key is pressed down.
-///
-/// Return:
-///   TRUE -- keyCode is connect button and it is handled.
-///   FALSE -- keyCode is not connect button.
-///
-////////////////////////////////////////////////////////////////////////////////
-static wiced_bool_t APP_connect_button(uint8_t keyCode, wiced_bool_t down)
-{
-    if (keyCode == CONNECT_KEY_INDEX)
+    if (keyCode < NUM_MAX_KEY)
     {
         if (down)
         {
-            APP_enterPairing();
+            app.keyStatus |= (1<<keyCode);
         }
-        return TRUE;
+        else
+        {
+            app.keyStatus &= ~(1<<keyCode);
+        }
+
+        switch (app.keyStatus) {
+        case CONNECT_COMBO:
+            hidd_led_on(LED_RED_IDX);
+            wiced_start_timer(&app.combokey_timer, CONNECT_COMBO_HOLD_TIME);
+            break;
+
+        default:
+            hidd_led_off(LED_RED_IDX);
+            wiced_stop_timer(&app.combokey_timer);
+            break;
+        }
     }
     return FALSE;
 }
-#endif
 
 /////////////////////////////////////////////////////////////////////////////////
 /// This is a callback function from keyscan when key action is detected
@@ -208,36 +176,33 @@ static void APP_keyDetected(HidEventKey* kbKeyEvent)
     }
 #endif
 
-    // Check for buttons
-    if (!APP_combo_key(keyCode, keyDown)
-#ifdef WICED_EVAL
-        && !APP_connect_button(keyCode, keyDown)
-#endif
-#if HID_AUDIO
-        && !audio_button(keyCode, keyDown)
-#endif
-       )
+    // Check if this is an end-of-scan cycle event
+    if (keyCode == END_OF_SCAN_CYCLE)
     {
-        // Check if this is an end-of-scan cycle event
-        if (keyCode == END_OF_SCAN_CYCLE)
+        // Yes. Queue it if it need not be suppressed
+        if (!suppressEndScanCycleAfterConnectButton)
         {
-            // Yes. Queue it if it need not be suppressed
-            if (!suppressEndScanCycleAfterConnectButton)
-            {
-                wiced_hidd_event_queue_add_event_with_overflow(&app.eventQueue, &kbKeyEvent->eventInfo, sizeof(HidEventKey), app.pollSeqn);
-            }
+            wiced_hidd_event_queue_add_event_with_overflow(&app.eventQueue, &kbKeyEvent->eventInfo, sizeof(HidEventKey), app.pollSeqn);
+        }
 
 #if ANDROID_AUDIO
-            if (audio_key_down)
-            {
-                audio_key_down = FALSE;
-                audio_START_REQ();
-            }
-#endif
-            // Enable end-of-scan cycle suppression since this is the start of a new cycle
-            suppressEndScanCycleAfterConnectButton = TRUE;
+        if (audio_key_down)
+        {
+            audio_key_down = FALSE;
+            audio_START_REQ();
         }
-        else if (keyCode != ROLLOVER)
+#endif
+        // Enable end-of-scan cycle suppression since this is the start of a new cycle
+        suppressEndScanCycleAfterConnectButton = TRUE;
+    }
+    else if (keyCode != ROLLOVER)
+    {
+        // Check for combo key
+        APP_combo_key(keyCode, keyDown);
+
+#if HID_AUDIO
+        if (!audio_button(keyCode, keyDown))
+#endif
         {
             WICED_BT_TRACE("\nkc:%d %c", kbKeyEvent->keyEvent.keyCode, keyDown ? 'D':'U');
 
@@ -853,6 +818,11 @@ void app_transportStateChangeNotification(uint32_t newState)
 #endif
         // Tell the transport to stop polling
         hidd_link_enable_poll_callback(BT_TRANSPORT_LE, WICED_FALSE);
+
+        //allow Shut Down Sleep (SDS) only if we are not attempting reconnect
+        if (!hidd_link_is_reconnect_timer_running())
+            hidd_deep_sleep_not_allowed(2000); // 2 seconds. timeout in ms
+
         break;
 
     case HIDLINK_LE_DISCOVERABLE:
@@ -948,11 +918,9 @@ wiced_result_t app_start(void)
     /* component/peripheral init */
     bat_init(APP_shutdown);
     audio_init(APP_pollReportUserActivity);
-    hidd_link_init();
     key_init(NUM_KEYSCAN_ROWS, NUM_KEYSCAN_COLS, APP_pollReportUserActivity, APP_keyDetected);
 
-    wiced_hal_mia_enable_mia_interrupt(TRUE);
-    wiced_hal_mia_enable_lhl_interrupt(TRUE);//GPIO interrupt
+    hidd_link_init(); // linitialize link last
 
     WICED_BT_TRACE("\nFree RAM bytes=%d bytes", wiced_memory_get_free_bytes());
 
