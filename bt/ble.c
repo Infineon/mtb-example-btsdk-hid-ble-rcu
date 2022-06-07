@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -85,7 +85,6 @@ const uint8_t anti_spoofing_private_key[] = "";
 /******************************************************************************
  * public data
  ******************************************************************************/
-uint8_t dev_local_name[]                    = BT_LOCAL_NAME;
 
 /******************************************************************************
  * Private data for handle attrib value
@@ -1420,7 +1419,7 @@ static void BLE_init_fast_pair(void)
     fastpair_conf.appended_adv_data.elem_num    = 1;
 
     /* Initialize Google Fast Pair Service. */
-    if (hidd_gatts_gfps_init(&fastpair_conf) == WICED_FALSE)
+    if (hidd_gatt_gfps_init(&fastpair_conf) == WICED_FALSE)
     {
         WICED_BT_TRACE("wiced_bt_gfps_provider_init fail\n");
     }
@@ -1523,7 +1522,7 @@ void ble_init()
     WICED_BT_TRACE("\nble_init");
 
     /*  LE GATT DB Initialization  */
-    hidd_gatts_init( reportModeGattMap, sizeof(reportModeGattMap)/sizeof(wiced_blehidd_report_gatt_characteristic_t),
+    hidd_gatt_init( reportModeGattMap, sizeof(reportModeGattMap)/sizeof(wiced_blehidd_report_gatt_characteristic_t),
                      blehid_db_data, sizeof(blehid_db_data),
                      blehid_gattAttributes, sizeof(blehid_gattAttributes)/sizeof(attribute_t),
                      blehid_app_gatts_req_read_callback, blehid_app_gatts_req_write_callback);

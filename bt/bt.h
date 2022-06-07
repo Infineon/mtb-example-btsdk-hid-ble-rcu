@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -40,9 +40,6 @@
 #define __APP_BT_H__
 
 #include "ble.h"
-
-extern wiced_bt_cfg_settings_t bt_cfg;
-extern uint8_t dev_local_name[];
 
 #define STD_KB_REPORT_DESCRIPTOR \
     /* RPT_ID_IN_STD_KEY */ \
