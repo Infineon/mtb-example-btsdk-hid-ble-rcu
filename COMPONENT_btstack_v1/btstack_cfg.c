@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -48,7 +48,7 @@ wiced_bt_cfg_settings_t bt_cfg =
 {
     .device_name                         = dev_local_name,                                   /**< Local device name (NULL terminated) */
     .device_class                        = {0x20, 0x25, 0x0c},                               /**< Local device class */
-    .security_requirement_mask           = BTM_SEC_NONE, //  was BTM_SEC_ENCRYPT,            /**< Security requirements mask (BTM_SEC_NONE, or combinination of BTM_SEC_IN_AUTHENTICATE, BTM_SEC_OUT_AUTHENTICATE, BTM_SEC_ENCRYPT (see #wiced_bt_sec_level_e)) */
+    .security_requirement_mask           = BTM_SEC_NONE, //  was BTM_SEC_ENCRYPT,            /**< Security requirements mask (BTM_SEC_NONE, or combinination of BTM_SEC_IN_AUTHENTICATE, BTM_SEC_OUT_AUTHENTICATE, BTM_SEC_ENCRYPT (see #wiced_bt_sec_level_e))
 
     .max_simultaneous_links              = 2,                                                /**< Maximum number simultaneous links to different devices */
 
@@ -63,9 +63,9 @@ wiced_bt_cfg_settings_t bt_cfg =
         .page_scan_window                = WICED_BT_CFG_DEFAULT_PAGE_SCAN_WINDOW             /**< Page scan window (0 to use default) */
     },
 
-    .ble_scan_cfg = /* BLE scan settings  */
+    .ble_scan_cfg = /* LE scan settings  */
     {
-        .scan_mode                       = BTM_BLE_SCAN_MODE_PASSIVE,                        /**< BLE scan mode (BTM_BLE_SCAN_MODE_PASSIVE, BTM_BLE_SCAN_MODE_ACTIVE, or BTM_BLE_SCAN_MODE_NONE) */
+        .scan_mode                       = BTM_BLE_SCAN_MODE_PASSIVE,                        /**< LE scan mode (BTM_BLE_SCAN_MODE_PASSIVE, BTM_BLE_SCAN_MODE_ACTIVE, or BTM_BLE_SCAN_MODE_NONE) */
 
         /* Advertisement scan configuration */
         .high_duty_scan_interval         = WICED_BT_CFG_DEFAULT_HIGH_DUTY_SCAN_INTERVAL,     /**< High duty scan interval */
@@ -100,7 +100,7 @@ wiced_bt_cfg_settings_t bt_cfg =
 #endif
     },
 
-    .ble_advert_cfg = /* BLE advertisement settings */
+    .ble_advert_cfg = /* LE advertisement settings */
     {
         .channel_map                     = BTM_BLE_ADVERT_CHNL_37 |                          /**< Advertising channel map */
                                            BTM_BLE_ADVERT_CHNL_38 |
@@ -201,7 +201,7 @@ wiced_bt_cfg_settings_t bt_cfg =
 #else
     .rpa_refresh_timeout                = WICED_BT_CFG_DEFAULT_RANDOM_ADDRESS_NEVER_CHANGE,  /**< Interval of  random address refreshing - secs */
 #endif
-    /* BLE Filter Accept List size */
+    /* LE Filter Accept List size */
     .ble_filter_accept_list_size                = 2,                                                 /**< Maximum number of Filter Accept List devices allowed. Cannot be more than 128 */
 #endif
 

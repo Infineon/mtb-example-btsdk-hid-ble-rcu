@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -33,9 +33,9 @@
 
 /** @file
  *
- * BLE RCU control
+ * Bluetooth LE RCU control
  *
- * This file provides definitions and function prototypes for BLE remote control
+ * This file provides definitions and function prototypes for LE remote control
  * device
  *
  */
@@ -53,7 +53,7 @@
 /*******************************************************************************
 * Types and Defines
 *******************************************************************************/
-#define BT_LOCAL_NAME "BLE RCU"
+#define BT_LOCAL_NAME "LE RCU"
 #define NUM_KEYSCAN_ROWS   3  // Num of Rows in keyscan matrix
 #define NUM_KEYSCAN_COLS   7  // Num of Cols in keyscan matrix
 #define NUM_MAX_KEY (NUM_KEYSCAN_ROWS*NUM_KEYSCAN_COLS)
@@ -186,7 +186,7 @@ void app_transportStateChangeNotification(uint32_t newState);
  * Function Name: app_start
  ********************************************************************************
  * Summary: This is application start function. After system initialization is done, when the
- *          bt management calls with BTM_ENABLED_EVT, this function is called to
+ *          Bluetooth management calls with BTM_ENABLED_EVT, this function is called to
  *          start application
  *
  * Parameters:

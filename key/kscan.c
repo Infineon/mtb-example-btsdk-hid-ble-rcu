@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -45,7 +45,7 @@ typedef struct {
     keyPressDetected_callback_t * appCb;
 } kscan_data_t;
 
-static kscan_data_t ks = {};
+static kscan_data_t ks = {0};
 
 /////////////////////////////////////////////////////////////////////////////////
 /// This function polls for key activity and queues any key events in the
