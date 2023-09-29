@@ -80,7 +80,7 @@ static void Bat_batLevelChangeNotification(uint32_t newLevel)
 void bat_init(void (shutdown_cb)())
 {
     //battery monitoring configuraion
-    wiced_hal_batmon_config(ADC_INPUT_VDDIO,      // ADC input pin
+    wiced_hal_batmon_config(ADC_INPUT_P38,      // ADC input pin
                             3000,               // Period in millisecs between battery measurements
                             8,                  // Number of measurements averaged for a report, max 16
                             3200,               // The full battery voltage in mili-volts

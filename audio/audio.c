@@ -53,10 +53,10 @@
 
 // Digital MIC port defines: PDM_CLK and PDM_DATA should defined in platform. If it is not defined, we will define it here
 #ifndef PDM_CLK
-#define PDM_CLK     WICED_P17
+#define PDM_CLK     WICED_P27
 #endif
 #ifndef PDM_DATA
-#define PDM_DATA    WICED_P15
+#define PDM_DATA    WICED_P26
 #endif
 
 typedef struct
@@ -282,20 +282,15 @@ void audio_procEvtVoice()
         hidd_voice_report_t * audioPtr = (hidd_voice_report_t *) audio.voiceEvent.userDataPtr;
         uint8_t audio_outData[DECODE_BUFF_SIZE];
         uint8_t * dataPtr = audio_outData;
-#ifdef ANDROID_AUDIO_1_0
-        uint16_t mtu_size = atv_supports_ver(1) ? AUDIO_MTU_SIZE : AUDIO_MTU_BASIC_SIZE;
-#else
- #define mtu_size AUDIO_MTU_SIZE
-#endif
 
         uint16_t len = hidd_mic_audio_get_audio_out_data(audioPtr, dataPtr);
 
         // as long as the len is larger than audio MTU size, we fragement the data
-        while (len >= mtu_size)
+        while (len >= AUDIO_MTU_SIZE)
         {
-            audio_send_data(dataPtr, mtu_size);
-            dataPtr += mtu_size;
-            len -= mtu_size;
+            audio_send_data(dataPtr, AUDIO_MTU_SIZE);
+            dataPtr += AUDIO_MTU_SIZE;
+            len -= AUDIO_MTU_SIZE;
         };
         // if any remainding residual data, finish it up
         if (len)

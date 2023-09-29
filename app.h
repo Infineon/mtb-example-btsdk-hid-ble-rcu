@@ -59,6 +59,9 @@
 #define NUM_MAX_KEY (NUM_KEYSCAN_ROWS*NUM_KEYSCAN_COLS)
 #define CONNECT_KEY_INDEX  0  // Use none exist key as a virtual connect key
 #define AUDIO_KEY_INDEX    1
+#define HOME_KEY_INDEX     13
+#define BACK_KEY_INDEX     14
+#define MUTE_KEY_INDEX     20
 
 #define CONNECT_INDEX       13 // HOME button hold for 10 sec to enter pairing
 #define CONNECT_COMBO       (1<<CONNECT_INDEX)   // CONNECT COMBO BITS

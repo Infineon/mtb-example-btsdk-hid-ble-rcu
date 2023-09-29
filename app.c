@@ -428,6 +428,11 @@ static uint32_t APP_sleep_handler(wiced_sleep_poll_type_t type )
             ret = WICED_SLEEP_ALLOWED_WITH_SHUTDOWN;
             // a key is down, no deep sleep
             if ( keyscanActive()
+
+                // If ble connection is established, wait the params update successfully
+                // (slow ble connection parameters with latency mode)
+                || (hidd_link_is_connected() && ble_params_is_expected() == FALSE)
+
   #ifdef SUPPORT_AUDIO
                 || audio_is_active()
   #endif
@@ -639,12 +644,24 @@ static void APP_hci_key_event(uint8_t keyCode, wiced_bool_t keyDown)
     // Translate to app defined key
     switch (keyCode)
     {
-        case KEY_AUDIO:
+        case HCI_CONTROL_HIDD_KEY_AUDIO:
             keyCode = AUDIO_KEY_INDEX;
             break;
 
-        case KEY_CONNECT:
+        case HCI_CONTROL_HIDD_KEY_CONNECT:
             keyCode = CONNECT_KEY_INDEX;
+            break;
+
+        case HCI_CONTROL_HIDD_KEY_MUTE:
+            keyCode = MUTE_KEY_INDEX;
+            break;
+
+        case HCI_CONTROL_HIDD_KEY_HOME:
+            keyCode = HOME_KEY_INDEX;
+            break;
+
+        case HCI_CONTROL_HIDD_KEY_BACK:
+            keyCode = BACK_KEY_INDEX;
             break;
 
 //        case KEY_MOTION:          // ignored
@@ -958,6 +975,7 @@ wiced_result_t app_management_cback(wiced_bt_management_evt_t event, wiced_bt_ma
         case BTM_ENCRYPTION_STATUS_EVT:
             if (p_event_data->encryption_status.result == WICED_SUCCESS)
             {
+                WICED_BT_TRACE("\nconfigure mtu size to %d", bt_cfg.gatt_cfg.max_mtu_size);
                 //configure ATT MTU size with peer device
                 wiced_bt_gatt_configure_mtu(blelink.gatts_conn_id, bt_cfg.gatt_cfg.max_mtu_size);
             }

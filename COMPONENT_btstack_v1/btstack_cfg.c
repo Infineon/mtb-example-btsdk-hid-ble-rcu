@@ -37,7 +37,7 @@
 #include "btstack.h"
 #include "app.h"
 
-#define MAX_MPU_SIZE                     512
+#define MAX_MPU_SIZE                     251
 
 uint8_t dev_local_name[]                 = BT_LOCAL_NAME;
 
@@ -85,11 +85,17 @@ wiced_bt_cfg_settings_t bt_cfg =
         .low_duty_conn_scan_window       = WICED_BT_CFG_DEFAULT_LOW_DUTY_CONN_SCAN_WINDOW,   /**< Low duty cycle connection scan window */
         .low_duty_conn_duration          = 30,                                               /**< Low duty cycle connection duration in seconds (0 for infinite) */
 
-#if defined(CELT_ENCODER) || defined(ADPCM_ENCODER)
+#if defined(CELT_ENCODER)
         /* Connection configuration */
         .conn_min_interval               = 16,                                               /**< Minimum connection interval */
         .conn_max_interval               = 16,                                               /**< Maximum connection interval */
         .conn_latency                    = 49,                                               /**< Connection latency */
+        .conn_supervision_timeout        = 500,                                              /**< Connection link supervision timeout */
+#elif defined(ADPCM_ENCODER)
+        /* Connection configuration */
+        .conn_min_interval               = 12,                                               /**< Minimum connection interval */
+        .conn_max_interval               = 12,                                               /**< Maximum connection interval */
+        .conn_latency                    = 63,                                               /**< Connection latency */
         .conn_supervision_timeout        = 500,                                              /**< Connection link supervision timeout */
 #else
         /* Connection configuration */

@@ -212,26 +212,28 @@ endif
 
 ifeq ($(AUDIO),OPUS)
  CY_APP_DEFINES += -DSUPPORT_AUDIO -DENABLE_ADC_AUDIO_ENHANCEMENTS -DCELT_ENCODER -DHID_AUDIO -DATT_MTU_SIZE_180
-# $(warning Audio OPUS encoding)
+ # for *.mk to include CYWxxxxxx_OPUS_CELT.cgs instead of CYWxxxxxxx.cgs
+ OPUS_CELT_ENCODER = 1
+# $(info Audio OPUS encoding)
 else
  ifeq ($(AUDIO),GOOGLE04)
   CY_APP_DEFINES += -DSUPPORT_AUDIO -DENABLE_ADC_AUDIO_ENHANCEMENTS -DADPCM_ENCODER -DANDROID_AUDIO
   CY_APP_PATCH_LIBS += adpcm_lib.a
-#  $(warning Google Voice 0.4)
+#  $(info Google Voice 0.4)
  else
   ifeq ($(AUDIO),GOOGLE)
    CY_APP_DEFINES += -DSUPPORT_AUDIO -DENABLE_ADC_AUDIO_ENHANCEMENTS -DADPCM_ENCODER -DANDROID_AUDIO -DANDROID_AUDIO_1_0
    CY_APP_PATCH_LIBS += adpcm_lib.a
-#   $(warning Google Voice 1.0)
+#   $(info Google Voice 1.0)
   else
    ifeq ($(AUDIO),MSBC)
     CY_APP_DEFINES += -DSUPPORT_AUDIO -DENABLE_ADC_AUDIO_ENHANCEMENTS -DSBC_ENCODER -DHID_AUDIO -DATT_MTU_SIZE_180
-#    $(warning Audio mSBC encoding)
+#    $(info Audio mSBC encoding)
    else
     ifneq ($(AUDIO),)
      $(error AUDIO=xxxx, where xxxx must be 'OPUS', 'GOOGLE', 'GOOGLE04', or 'MSBC')
     else
-#     $(warning Audio disabled)
+#     $(info Audio disabled)
     endif
    endif
   endif
